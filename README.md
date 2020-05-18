@@ -2,7 +2,7 @@ remove-redundancy
 ======================
 [![License](https://poser.pugx.org/badges/poser/license.svg)](./LICENSE)
 
-Script that eliminates the redundancy of at least two .xlsx formatted files from Scopus, Web of Science, PubMed or Dimensions
+Script that eliminates the redundancy of at least two .xlsx formatted files from Scopus, Web of Science, PubMed or Dimensions.
 
 ## Table of content
 
@@ -79,14 +79,16 @@ You can [download](https://github.com/glenjasper/remove-redundancy/archive/maste
 * [Glen Jasper](https://github.com/glenjasper)
 
 ## Organization
-* [Molecular and Computational Biology of Fungi Laboratory](http://lbmcf.pythonanywhere.com) (LBMCF, ICB - **UFMG**, Belo Horizonte, Brazil)
+* [Molecular and Computational Biology of Fungi Laboratory](http://lbmcf.pythonanywhere.com) (LBMCF, ICB - **UFMG**, Belo Horizonte, Brazil).
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details
+Copyright (c) 2020 [Glen Jasper](https://github.com/glenjasper).
+
+This project is licensed under the MIT License - see the [LICENSE](./LICENSE) file for details.
 
 ## Acknowledgments
 
-* Aristóteles Góes-Neto
-* Rosimeire Floripes
-* Joyce da Cruz Ferraz
+* Dr. Aristóteles Góes-Neto
+* MSc. Rosimeire Floripes
+* MSc. Joyce da Cruz Ferraz
