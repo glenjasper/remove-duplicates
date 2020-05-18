@@ -57,16 +57,15 @@ You can [download](https://github.com/glenjasper/remove-redundancy/archive/maste
 ## How To Use
 
 ```sh  
-  $ python3 remove_redundancy.py --help
   usage: remove_redundancy.py [-h] -f FILES [-o OUTPUT] [--version]
 
-  Script que elimina a redundância de pelo menos dois arquivos formatados .xlsx
-  do Scopus, Web of Science, PubMed ou Dimensions
+  Script que elimina a redundância de pelo menos dois arquivos .xlsx formatados,
+  das plataformas Scopus, Web of Science, PubMed ou Dimensions
 
   optional arguments:
     -h, --help            show this help message and exit
     -f FILES, --files FILES
-                          Arquivos formatados .xlsx, separados por vírgula
+                          Arquivos .xlsx formatados, separados por vírgula
     -o OUTPUT, --output OUTPUT
                           Pasta de saida
     --version             show program's version number and exit
