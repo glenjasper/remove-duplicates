@@ -2,7 +2,7 @@ remove-redundancy
 ======================
 [![License](https://poser.pugx.org/badges/poser/license.svg)](./LICENSE)
 
-Script that eliminates the redundancy of at least two .xlsx formatted files from Scopus, Web of Science, PubMed or Dimensions.
+Script that eliminates the redundancy of at least two .xlsx formatted files from [Scopus](https://www.scopus.com), [Web of Science](https://clarivate.com/webofsciencegroup/solutions/web-of-science), [PubMed](https://www.ncbi.nlm.nih.gov/pubmed) or [Dimensions](https://app.dimensions.ai).
 
 ## Table of content
 
