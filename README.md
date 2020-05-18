@@ -30,6 +30,7 @@ Script that eliminates the redundancy of at least two .xlsx formatted files from
   $ sudo pip3 install argparse
   $ sudo pip3 install openpyxl
   $ sudo pip3 install xlsxwriter
+  $ sudo pip3 install crossrefapi
 ```
 
 ## Installation
@@ -46,7 +47,7 @@ To clone and run this application, you'll need [Git](https://git-scm.com) instal
   $ cd remove-redundancy
 
   # Run the app
-  $ python3 remove-redundancy.py --help
+  $ python3 remove_redundancy.py --help
 ```
 
 ### Download
