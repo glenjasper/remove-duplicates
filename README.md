@@ -82,8 +82,6 @@ You can [download](https://github.com/glenjasper/remove-redundancy/archive/maste
 
 ## License
 
-Copyright (c) 2020 [Glen Jasper](https://github.com/glenjasper).
-
 This project is licensed under the MIT License - see the [LICENSE](./LICENSE) file for details.
 
 ## Acknowledgments
