@@ -10,8 +10,8 @@ from openpyxl import load_workbook
 from crossref.restful import Works
 
 def menu(args):
-    parser = argparse.ArgumentParser(description = "Script que elimina a redundância de pelo menos dois arquivos formatados .xlsx do Scopus, Web of Science, PubMed ou Dimensions", epilog = "Thank you!")
-    parser.add_argument("-f", "--files", required = True, help = "Arquivos formatados .xlsx, separados por vírgula")
+    parser = argparse.ArgumentParser(description = "Script que elimina a redundância de pelo menos dois arquivos .xlsx formatados, das plataformas Scopus, Web of Science, PubMed ou Dimensions", epilog = "Thank you!")
+    parser.add_argument("-f", "--files", required = True, help = "Arquivos .xlsx formatados, separados por vírgula")
     parser.add_argument("-o", "--output", help = "Pasta de saida")
     parser.add_argument("--version", action = "version", version = "%s %s" % ('%(prog)s', orr.VERSION))
     args = parser.parse_args()
