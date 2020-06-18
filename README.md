@@ -1,4 +1,4 @@
-remove-redundancy
+remove-duplicates
 ======================
 [![License](https://poser.pugx.org/badges/poser/license.svg)](./LICENSE)
 
@@ -41,23 +41,23 @@ To clone and run this application, you'll need [Git](https://git-scm.com) instal
 
 ```bash
   # Clone this repository
-  $ git clone https://github.com/glenjasper/remove-redundancy.git
+  $ git clone https://github.com/glenjasper/remove-duplicates.git
 
   # Go into the repository
-  $ cd remove-redundancy
+  $ cd remove-duplicates
 
   # Run the app
-  $ python3 remove_redundancy.py --help
+  $ python3 remove_duplicates.py --help
 ```
 
 ### Download
 
-You can [download](https://github.com/glenjasper/remove-redundancy/archive/master.zip) the latest installable version of _remove-redundancy_.
+You can [download](https://github.com/glenjasper/remove-duplicates/archive/master.zip) the latest installable version of _remove-duplicates_.
 
 ## How To Use
 
 ```sh  
-  usage: remove_redundancy.py [-h] -f FILES [-o OUTPUT] [--version]
+  usage: remove_duplicates.py [-h] -f FILES [-o OUTPUT] [--version]
 
   Script que elimina a redundância de pelo menos dois arquivos .xlsx formatados,
   das plataformas Scopus, Web of Science, PubMed ou Dimensions
