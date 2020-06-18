@@ -10,9 +10,9 @@ from openpyxl import load_workbook
 from crossref.restful import Works
 
 def menu(args):
-    parser = argparse.ArgumentParser(description = "Script que elimina a redundância de pelo menos dois arquivos .xlsx formatados, das plataformas Scopus, Web of Science, PubMed ou Dimensions", epilog = "Thank you!")
-    parser.add_argument("-f", "--files", required = True, help = "Arquivos .xlsx formatados, separados por vírgula")
-    parser.add_argument("-o", "--output", help = "Pasta de saida")
+    parser = argparse.ArgumentParser(description = "This script eliminates the duplicated records from formatted .xlsx files from Scopus, Web of Science, PubMed, or Dimensions. Is mandatory that there be at least 2 different files from 2 different databases.", epilog = "Thank you!")
+    parser.add_argument("-f", "--files", required = True, help = ".xlsx files separated by comma")
+    parser.add_argument("-o", "--output", help = "Output folder")
     parser.add_argument("--version", action = "version", version = "%s %s" % ('%(prog)s', orr.VERSION))
     args = parser.parse_args()
 
@@ -96,6 +96,7 @@ class RemoveRedundancy:
         self.xls_col_doi = 'DOI'
         self.xls_col_document_type = 'Document Type'
         self.xls_col_languaje = 'Language'
+        self.xls_col_cited_by = 'Cited By'
         self.xls_col_authors = 'Author(s)'
         self.xls_col_repository = 'Repository'
 
@@ -109,8 +110,15 @@ class RemoveRedundancy:
                             self.xls_col_doi,
                             self.xls_col_document_type,
                             self.xls_col_languaje,
+                            self.xls_col_cited_by,
                             self.xls_col_authors,
                             self.xls_col_repository]
+
+        # Crossref API
+        self.crossref_title = 'container-title'
+        self.crossref_cited_by = 'is-referenced-by-count'
+        self.crossref_created = 'created'
+        self.crossref_created_date_parts = 'date-parts'
 
         # Status DOI
         self.status_inactive_doi = 'Inactive DOIs'
@@ -177,11 +185,26 @@ class RemoveRedundancy:
         is_valid = False
         status = None
         if response is not None:
-            status = response['container-title'][0]
+            status = response[self.crossref_title][0]
             if status != self.status_inactive_doi:
                 is_valid = True
 
         return is_valid
+
+    def get_complement(self, doi):
+        try:
+            works = Works()
+            response = works.doi(doi)
+
+            year = None
+            cited_by = None
+            if response is not None:
+                year = response[self.crossref_created][self.crossref_created_date_parts][0][0]
+                cited_by = response[self.crossref_cited_by]
+
+            return year, cited_by
+        except Exception as e:
+            return None, None
 
     def save_xls(self, dict_unique, dict_redundancies):
 
@@ -207,23 +230,36 @@ class RemoveRedundancy:
             worksheet.set_column(first_col = 3, last_col = 3, width = 33) # Column D:D
             worksheet.set_column(first_col = 4, last_col = 4, width = 18) # Column E:E
             worksheet.set_column(first_col = 5, last_col = 5, width = 12) # Column F:F
-            worksheet.set_column(first_col = 6, last_col = 6, width = 36) # Column G:G
-            worksheet.set_column(first_col = 7, last_col = 7, width = 13) # Column I:I
+            worksheet.set_column(first_col = 6, last_col = 6, width = 11) # Column G:G
+            worksheet.set_column(first_col = 7, last_col = 7, width = 36) # Column H:H
+            worksheet.set_column(first_col = 8, last_col = 8, width = 13) # Column I:I
             if sheet_type == self.XLS_SHEET_REDUNDANCIES:
-                worksheet.set_column(first_col = 8, last_col = 8, width = 19) # Column J:J
+                worksheet.set_column(first_col = 9, last_col = 9, width = 19) # Column J:J
 
             icol = 0
             for irow, item in dictionary.items():
+                col_doi = item[self.xls_col_doi]
+                col_year = item[self.xls_col_year]
+                col_cited_by = item[self.xls_col_cited_by]
+
+                if col_year is None and col_cited_by is None:
+                    col_year, col_cited_by = self.get_complement(col_doi)
+                elif col_year is None:
+                    col_year, _ = self.get_complement(col_doi)
+                elif col_cited_by is None:
+                    _, col_cited_by = self.get_complement(col_doi)
+
                 worksheet.write(irow, icol + 0, irow, styles_rows)
                 worksheet.write(irow, icol + 1, item[self.xls_col_title], styles_rows)
-                worksheet.write(irow, icol + 2, item[self.xls_col_year], styles_rows)
-                worksheet.write(irow, icol + 3, item[self.xls_col_doi], styles_rows)
+                worksheet.write(irow, icol + 2, col_year, styles_rows)
+                worksheet.write(irow, icol + 3, col_doi, styles_rows)
                 worksheet.write(irow, icol + 4, item[self.xls_col_document_type], styles_rows)
                 worksheet.write(irow, icol + 5, item[self.xls_col_languaje], styles_rows)
-                worksheet.write(irow, icol + 6, item[self.xls_col_authors], styles_rows)
-                worksheet.write(irow, icol + 7, item[self.xls_col_repository], styles_rows)
+                worksheet.write(irow, icol + 6, col_cited_by, styles_rows)
+                worksheet.write(irow, icol + 7, item[self.xls_col_authors], styles_rows)
+                worksheet.write(irow, icol + 8, item[self.xls_col_repository], styles_rows)
                 if sheet_type == self.XLS_SHEET_REDUNDANCIES:
-                    worksheet.write(irow, icol + 8, item[self.xls_col_redundancy_type], styles_rows)
+                    worksheet.write(irow, icol + 9, item[self.xls_col_redundancy_type], styles_rows)
 
         workbook = xlsxwriter.Workbook(self.XLS_FILE_OUTPUT)
 
@@ -270,6 +306,8 @@ class RemoveRedundancy:
                 elif index_j == 5:
                     column_name = self.xls_col_languaje
                 elif index_j == 6:
+                    column_name = self.xls_col_cited_by
+                elif index_j == 7:
                     column_name = self.xls_col_authors
                 collection.update({column_name: cell.value})
 
@@ -300,8 +338,8 @@ def main(args):
         orr.show_print("#############################################################################", [orr.LOG_FILE], font = orr.BIGREEN)
         orr.show_print("############################ Remove Redundancies ############################", [orr.LOG_FILE], font = orr.BIGREEN)
         orr.show_print("#############################################################################", [orr.LOG_FILE], font = orr.BIGREEN)
+
         orr.show_print("Input files:", [orr.LOG_FILE], font = orr.GREEN)
-        xls_file_base = {}
         for index, (repository, file) in enumerate(orr.DICT_XLS_FILES.items()):
             if index == 0:
                 base_repository = repository
