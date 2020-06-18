@@ -2,7 +2,7 @@ remove-duplicates
 ======================
 [![License](https://poser.pugx.org/badges/poser/license.svg)](./LICENSE)
 
-Script that eliminates the redundancy of at least two .xlsx formatted files from [Scopus](https://www.scopus.com), [Web of Science](https://clarivate.com/webofsciencegroup/solutions/web-of-science), [PubMed](https://www.ncbi.nlm.nih.gov/pubmed) or [Dimensions](https://app.dimensions.ai).
+This script eliminates the duplicated records from formatted .xlsx files from [Scopus](https://www.scopus.com), [Web of Science](https://clarivate.com/webofsciencegroup/solutions/web-of-science), [PubMed](https://www.ncbi.nlm.nih.gov/pubmed) or [Dimensions](https://app.dimensions.ai). Is mandatory that there be at least 2 different files from 2 different databases.
 
 ## Table of content
 
@@ -59,15 +59,16 @@ You can [download](https://github.com/glenjasper/remove-duplicates/archive/maste
 ```sh  
   usage: remove_duplicates.py [-h] -f FILES [-o OUTPUT] [--version]
 
-  Script que elimina a redundância de pelo menos dois arquivos .xlsx formatados,
-  das plataformas Scopus, Web of Science, PubMed ou Dimensions
+  This script eliminates the duplicated records from formatted .xlsx files from
+  Scopus, Web of Science, PubMed, or Dimensions. Is mandatory that there be at
+  least 2 different files from 2 different databases.
 
   optional arguments:
     -h, --help            show this help message and exit
     -f FILES, --files FILES
-                          Arquivos .xlsx formatados, separados por vírgula
+                          .xlsx files separated by comma
     -o OUTPUT, --output OUTPUT
-                          Pasta de saida
+                          Output folder
     --version             show program's version number and exit
 
   Thank you!
