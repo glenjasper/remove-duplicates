@@ -52,10 +52,10 @@ def menu(args):
             exit()
     else:
         orr.OUTPUT_PATH = os.getcwd().strip()
-        orr.OUTPUT_PATH = os.path.join(orr.OUTPUT_PATH, 'output_remove_redun')
+        orr.OUTPUT_PATH = os.path.join(orr.OUTPUT_PATH, 'output_remove_duplicate')
         orr.create_directory(orr.OUTPUT_PATH)
 
-class RemoveRedundancy:
+class RemoveDuplicate:
 
     def __init__(self):
         self.VERSION = 1.0
@@ -87,7 +87,7 @@ class RemoveRedundancy:
         # Output
         self.XLS_FILE_OUTPUT = 'summary_unique_dois.xlsx'
         self.XLS_SHEET_DETAIL = 'Detail'
-        self.XLS_SHEET_REDUNDANCIES = 'Redundancies'
+        self.XLS_SHEET_DUPLICATES = 'Duplicates'
 
         # Xls Columns
         self.xls_col_item = 'Item'
@@ -100,7 +100,7 @@ class RemoveRedundancy:
         self.xls_col_authors = 'Author(s)'
         self.xls_col_repository = 'Repository'
 
-        self.xls_col_redundancy_type = 'Redundancy Type'
+        self.xls_col_duplicate_type = 'Duplicate Type'
         self.xls_val_by_doi = 'By DOI'
         self.xls_val_by_title = 'By Title'
 
@@ -206,11 +206,11 @@ class RemoveRedundancy:
         except Exception as e:
             return None, None
 
-    def save_xls(self, dict_unique, dict_redundancies):
+    def save_xls(self, dict_unique, dict_duplicates):
 
         def create_sheet(oworkbook, sheet_type, dictionary, styles_title, styles_rows):
-            if sheet_type == self.XLS_SHEET_REDUNDANCIES:
-                self.xls_columns.append(self.xls_col_redundancy_type)
+            if sheet_type == self.XLS_SHEET_DUPLICATES:
+                self.xls_columns.append(self.xls_col_duplicate_type)
 
             _last_col = len(self.xls_columns) - 1
 
@@ -233,7 +233,7 @@ class RemoveRedundancy:
             worksheet.set_column(first_col = 6, last_col = 6, width = 11) # Column G:G
             worksheet.set_column(first_col = 7, last_col = 7, width = 36) # Column H:H
             worksheet.set_column(first_col = 8, last_col = 8, width = 13) # Column I:I
-            if sheet_type == self.XLS_SHEET_REDUNDANCIES:
+            if sheet_type == self.XLS_SHEET_DUPLICATES:
                 worksheet.set_column(first_col = 9, last_col = 9, width = 19) # Column J:J
 
             icol = 0
@@ -258,8 +258,8 @@ class RemoveRedundancy:
                 worksheet.write(irow, icol + 6, col_cited_by, styles_rows)
                 worksheet.write(irow, icol + 7, item[self.xls_col_authors], styles_rows)
                 worksheet.write(irow, icol + 8, item[self.xls_col_repository], styles_rows)
-                if sheet_type == self.XLS_SHEET_REDUNDANCIES:
-                    worksheet.write(irow, icol + 9, item[self.xls_col_redundancy_type], styles_rows)
+                if sheet_type == self.XLS_SHEET_DUPLICATES:
+                    worksheet.write(irow, icol + 9, item[self.xls_col_duplicate_type], styles_rows)
 
         workbook = xlsxwriter.Workbook(self.XLS_FILE_OUTPUT)
 
@@ -272,7 +272,7 @@ class RemoveRedundancy:
         cell_format_row = workbook.add_format({'text_wrap': True, 'valign': 'top'})
 
         create_sheet(workbook, self.XLS_SHEET_DETAIL, dict_unique, cell_format_title, cell_format_row)
-        create_sheet(workbook, self.XLS_SHEET_REDUNDANCIES, dict_redundancies, cell_format_title, cell_format_row)
+        create_sheet(workbook, self.XLS_SHEET_DUPLICATES, dict_duplicates, cell_format_title, cell_format_row)
 
         workbook.close()
 
@@ -336,7 +336,7 @@ def main(args):
         orr.create_directory(orr.OUTPUT_PATH)
         orr.get_list_files()
         orr.show_print("#############################################################################", [orr.LOG_FILE], font = orr.BIGREEN)
-        orr.show_print("############################ Remove Redundancies ############################", [orr.LOG_FILE], font = orr.BIGREEN)
+        orr.show_print("############################# Remove Deplicates #############################", [orr.LOG_FILE], font = orr.BIGREEN)
         orr.show_print("#############################################################################", [orr.LOG_FILE], font = orr.BIGREEN)
 
         orr.show_print("Input files:", [orr.LOG_FILE], font = orr.GREEN)
@@ -352,7 +352,7 @@ def main(args):
         for _, item in collection_base.items():
             item.update({orr.xls_col_repository: base_repository})
 
-        collect_redundant = {}
+        collect_duplicate = {}
         collect_unique = {}
         for secondary_repository, secondary_file in orr.DICT_XLS_FILES.items():
             # Load information
@@ -375,21 +375,21 @@ def main(args):
                 collect_unique_doi.update({index_u: item})
                 index_u += 1
 
-            index_r = len(collect_redundant) + 1
+            index_r = len(collect_duplicate) + 1
             index_u = len(collect_unique_doi) + 1
             for _, item in collection_secondary.items():
                 doi = item[orr.xls_col_doi]
                 item.update({orr.xls_col_repository: secondary_repository})
                 if doi in dois_duplicate:
-                    item[orr.xls_col_redundancy_type] = orr.xls_val_by_doi
-                    collect_redundant.update({index_r: item})
+                    item[orr.xls_col_duplicate_type] = orr.xls_val_by_doi
+                    collect_duplicate.update({index_r: item})
                     index_r += 1
 
                 if doi in dois_only_secondary:
                     collect_unique_doi.update({index_u: item})
                     index_u += 1
 
-            # Get redundant titles
+            # Get duplicate titles
             nr_title = []
             re_title = []
             for _, row in collect_unique_doi.items():
@@ -408,7 +408,7 @@ def main(args):
             # Get unique titles
             nr_title_ctrl = {item: {'n_check': 0, 'is_valid': False, 'repository': None} for item in re_title}
             index_u = 1
-            index_r = len(collect_redundant) + 1
+            index_r = len(collect_duplicate) + 1
             for _, row in collect_unique_doi.items():
                 flag_unique = False
 
@@ -450,8 +450,8 @@ def main(args):
                     collect_unique.update({index_u: row})
                     index_u += 1
                 else:
-                    row[orr.xls_col_redundancy_type] = orr.xls_val_by_title
-                    collect_redundant.update({index_r: row})
+                    row[orr.xls_col_duplicate_type] = orr.xls_val_by_title
+                    collect_duplicate.update({index_r: row})
                     index_r += 1
 
             # For other respositories
@@ -461,7 +461,7 @@ def main(args):
                 dois_base.append(item[orr.xls_col_doi])
 
         # Create summary file
-        orr.save_xls(collect_unique, collect_redundant)
+        orr.save_xls(collect_unique, collect_duplicate)
         orr.show_print("Output file: %s" % orr.XLS_FILE_OUTPUT, [orr.LOG_FILE], font = orr.GREEN)
 
         orr.show_print("", [orr.LOG_FILE])
@@ -473,5 +473,5 @@ def main(args):
         orr.show_print("Done!", [orr.LOG_FILE])
 
 if __name__ == '__main__':
-    orr = RemoveRedundancy()
+    orr = RemoveDuplicate()
     main(sys.argv)
