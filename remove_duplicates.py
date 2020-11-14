@@ -271,8 +271,10 @@ class RemoveDuplicate:
                                                  'valign': 'vcenter'})
         cell_format_row = workbook.add_format({'text_wrap': True, 'valign': 'top'})
 
+        self.show_print("Getting additional information from Crossref [Year, Cited by]", [self.LOG_FILE])
         create_sheet(workbook, self.XLS_SHEET_DETAIL, dict_unique, cell_format_title, cell_format_row)
         create_sheet(workbook, self.XLS_SHEET_DUPLICATES, dict_duplicates, cell_format_title, cell_format_row)
+        self.show_print("", [self.LOG_FILE])
 
         workbook.close()
 
