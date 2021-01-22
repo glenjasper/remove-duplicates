@@ -6,6 +6,7 @@ import time
 import argparse
 import traceback
 import xlsxwriter
+from tqdm import tqdm
 from openpyxl import load_workbook
 from crossref.restful import Works
 
@@ -209,6 +210,36 @@ class RemoveDuplicate:
     def save_xls(self, dict_unique, dict_duplicates):
 
         def create_sheet(oworkbook, sheet_type, dictionary, styles_title, styles_rows):
+
+            def add_row(pbar = None):
+                icol = 0
+                for irow, item in dictionary.items():
+                    col_doi = item[self.xls_col_doi]
+                    col_year = item[self.xls_col_year]
+                    col_cited_by = item[self.xls_col_cited_by]
+
+                    if pbar:
+                        if col_year is None or col_cited_by is None:
+                            if col_year is None and col_cited_by is None:
+                                col_year, col_cited_by = self.get_complement(col_doi)
+                            elif col_year is None:
+                                col_year, _ = self.get_complement(col_doi)
+                            elif col_cited_by is None:
+                                _, col_cited_by = self.get_complement(col_doi)
+                            pbar.update(1)
+
+                    worksheet.write(irow, icol + 0, irow, styles_rows)
+                    worksheet.write(irow, icol + 1, item[self.xls_col_title], styles_rows)
+                    worksheet.write(irow, icol + 2, col_year, styles_rows)
+                    worksheet.write(irow, icol + 3, col_doi, styles_rows)
+                    worksheet.write(irow, icol + 4, item[self.xls_col_document_type], styles_rows)
+                    worksheet.write(irow, icol + 5, item[self.xls_col_languaje], styles_rows)
+                    worksheet.write(irow, icol + 6, col_cited_by, styles_rows)
+                    worksheet.write(irow, icol + 7, item[self.xls_col_authors], styles_rows)
+                    worksheet.write(irow, icol + 8, item[self.xls_col_repository], styles_rows)
+                    if sheet_type == self.XLS_SHEET_DUPLICATES:
+                        worksheet.write(irow, icol + 9, item[self.xls_col_duplicate_type], styles_rows)
+
             if sheet_type == self.XLS_SHEET_DUPLICATES:
                 self.xls_columns.append(self.xls_col_duplicate_type)
 
@@ -236,30 +267,19 @@ class RemoveDuplicate:
             if sheet_type == self.XLS_SHEET_DUPLICATES:
                 worksheet.set_column(first_col = 9, last_col = 9, width = 19) # Column J:J
 
-            icol = 0
+            total = 0
             for irow, item in dictionary.items():
-                col_doi = item[self.xls_col_doi]
                 col_year = item[self.xls_col_year]
                 col_cited_by = item[self.xls_col_cited_by]
 
-                if col_year is None and col_cited_by is None:
-                    col_year, col_cited_by = self.get_complement(col_doi)
-                elif col_year is None:
-                    col_year, _ = self.get_complement(col_doi)
-                elif col_cited_by is None:
-                    _, col_cited_by = self.get_complement(col_doi)
+                if col_year is None or col_cited_by is None:
+                    total += 1
 
-                worksheet.write(irow, icol + 0, irow, styles_rows)
-                worksheet.write(irow, icol + 1, item[self.xls_col_title], styles_rows)
-                worksheet.write(irow, icol + 2, col_year, styles_rows)
-                worksheet.write(irow, icol + 3, col_doi, styles_rows)
-                worksheet.write(irow, icol + 4, item[self.xls_col_document_type], styles_rows)
-                worksheet.write(irow, icol + 5, item[self.xls_col_languaje], styles_rows)
-                worksheet.write(irow, icol + 6, col_cited_by, styles_rows)
-                worksheet.write(irow, icol + 7, item[self.xls_col_authors], styles_rows)
-                worksheet.write(irow, icol + 8, item[self.xls_col_repository], styles_rows)
-                if sheet_type == self.XLS_SHEET_DUPLICATES:
-                    worksheet.write(irow, icol + 9, item[self.xls_col_duplicate_type], styles_rows)
+            if sheet_type == self.XLS_SHEET_DETAIL:
+                with tqdm(total = total) as pbar:
+                    add_row(pbar)
+            elif sheet_type == self.XLS_SHEET_DUPLICATES:
+                add_row()
 
         workbook = xlsxwriter.Workbook(self.XLS_FILE_OUTPUT)
 
