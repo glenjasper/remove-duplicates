@@ -180,17 +180,20 @@ class RemoveDuplicate:
         return _check
 
     def check_doi(self, doi):
-        works = Works()
-        response = works.doi(doi)
+        try:
+            works = Works()
+            response = works.doi(doi)
 
-        is_valid = False
-        status = None
-        if response is not None:
-            status = response[self.crossref_title][0]
-            if status != self.status_inactive_doi:
-                is_valid = True
+            is_valid = False
+            status = None
+            if response is not None:
+                status = response[self.crossref_title][0]
+                if status != self.status_inactive_doi:
+                    is_valid = True
 
-        return is_valid
+            return is_valid
+        except Exception as e:
+            return False
 
     def get_complement(self, doi):
         try:
