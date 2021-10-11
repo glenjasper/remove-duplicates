@@ -120,6 +120,8 @@ class RemoveDuplicate:
         self.crossref_cited_by = 'is-referenced-by-count'
         self.crossref_created = 'created'
         self.crossref_created_date_parts = 'date-parts'
+        self.crossref_type = 'type'
+        self.crossref_language = 'language'
 
         # Status DOI
         self.status_inactive_doi = 'Inactive DOIs'
@@ -195,6 +197,238 @@ class RemoveDuplicate:
         except Exception as e:
             return False
 
+    def get_language(self, code):
+        hash_data = {
+            'ab': 'Abkhazian',
+            'aa': 'Afar',
+            'af': 'Afrikaans',
+            'ak': 'Akan',
+            'sq': 'Albanian',
+            'am': 'Amharic',
+            'ar': 'Arabic',
+            'an': 'Aragonese',
+            'hy': 'Armenian',
+            'as': 'Assamese',
+            'av': 'Avaric',
+            'ae': 'Avestan',
+            'ay': 'Aymara',
+            'az': 'Azerbaijani',
+            'bm': 'Bambara',
+            'ba': 'Bashkir',
+            'eu': 'Basque',
+            'be': 'Belarusian',
+            'bn': 'Bengali',
+            'bi': 'Bislama',
+            'bs': 'Bosnian',
+            'br': 'Breton',
+            'bg': 'Bulgarian',
+            'my': 'Burmese',
+            'ca': 'Catalan',
+            'km': 'Central Khmer',
+            'ch': 'Chamorro',
+            'ce': 'Chechen',
+            'zh': 'Chinese',
+            'cu': 'Church Slavic',
+            'cv': 'Chuvash',
+            'kw': 'Cornish',
+            'co': 'Corsican',
+            'cr': 'Cree',
+            'hr': 'Croatian',
+            'cs': 'Czech',
+            'da': 'Danish',
+            'dv': 'Divehi',
+            'nl': 'Dutch',
+            'dz': 'Dzongkha',
+            'en': 'English',
+            'eo': 'Esperanto',
+            'et': 'Estonian',
+            'ee': 'Ewe',
+            'fo': 'Faroese',
+            'fj': 'Fijian',
+            'fi': 'Finnish',
+            'fr': 'French',
+            'ff': 'Fulah',
+            'gd': 'Gaelic',
+            'gl': 'Galician',
+            'lg': 'Ganda',
+            'ka': 'Georgian',
+            'de': 'German',
+            'el': 'Greek',
+            'gn': 'Guarani',
+            'gu': 'Gujarati',
+            'ht': 'Haitian',
+            'ha': 'Hausa',
+            'he': 'Hebrew',
+            'hz': 'Herero',
+            'hi': 'Hindi',
+            'ho': 'Hiri Motu',
+            'hu': 'Hungarian',
+            'is': 'Icelandic',
+            'io': 'Ido',
+            'ig': 'Igbo',
+            'id': 'Indonesian',
+            'ia': 'Interlingua',
+            'ie': 'Interlingue',
+            'iu': 'Inuktitut',
+            'ik': 'Inupiaq',
+            'ga': 'Irish',
+            'it': 'Italian',
+            'ja': 'Japanese',
+            'jv': 'Javanese',
+            'kl': 'Kalaallisut',
+            'kn': 'Kannada',
+            'kr': 'Kanuri',
+            'ks': 'Kashmiri',
+            'kk': 'Kazakh',
+            'ki': 'Kikuyu',
+            'rw': 'Kinyarwanda',
+            'ky': 'Kirghiz',
+            'kv': 'Komi',
+            'kg': 'Kongo',
+            'ko': 'Korean',
+            'kj': 'Kuanyama',
+            'ku': 'Kurdish',
+            'lo': 'Lao',
+            'la': 'Latin',
+            'lv': 'Latvian',
+            'li': 'Limburgan',
+            'ln': 'Lingala',
+            'lt': 'Lithuanian',
+            'lu': 'Luba-Katanga',
+            'lb': 'Luxembourgish',
+            'mk': 'Macedonian',
+            'mg': 'Malagasy',
+            'ms': 'Malay',
+            'ml': 'Malayalam',
+            'mt': 'Maltese',
+            'gv': 'Manx',
+            'mi': 'Maori',
+            'mr': 'Marathi',
+            'mh': 'Marshallese',
+            'mn': 'Mongolian',
+            'na': 'Nauru',
+            'nv': 'Navajo',
+            'ng': 'Ndonga',
+            'ne': 'Nepali',
+            'nd': 'North Ndebele',
+            'se': 'Northern Sami',
+            'no': 'Norwegian',
+            'nb': 'Norwegian Bokmal',
+            'nn': 'Norwegian Nynorsk',
+            'ny': 'Nyanja',
+            'oc': 'Occitan',
+            'oj': 'Ojibwa',
+            'or': 'Oriya',
+            'om': 'Oromo',
+            'os': 'Ossetian',
+            'pi': 'Pali',
+            'ps': 'Pashto',
+            'fa': 'Persian',
+            'pl': 'Polish',
+            'pt': 'Portuguese',
+            'pa': 'Punjabi',
+            'qu': 'Quechua',
+            'ro': 'Romanian',
+            'rm': 'Romansh',
+            'rn': 'Rundi',
+            'ru': 'Russian',
+            'sm': 'Samoan',
+            'sg': 'Sango',
+            'sa': 'Sanskrit',
+            'sc': 'Sardinian',
+            'sr': 'Serbian',
+            'sn': 'Shona',
+            'ii': 'Sichuan Yi',
+            'sd': 'Sindhi',
+            'si': 'Sinhala',
+            'sk': 'Slovak',
+            'sl': 'Slovenian',
+            'so': 'Somali',
+            'nr': 'South Ndebele',
+            'st': 'Southern Sotho',
+            'es': 'Spanish',
+            'su': 'Sundanese',
+            'sw': 'Swahili',
+            'ss': 'Swati',
+            'sv': 'Swedish',
+            'tl': 'Tagalog',
+            'ty': 'Tahitian',
+            'tg': 'Tajik',
+            'ta': 'Tamil',
+            'tt': 'Tatar',
+            'te': 'Telugu',
+            'th': 'Thai',
+            'bo': 'Tibetan',
+            'ti': 'Tigrinya',
+            'to': 'Tonga',
+            'ts': 'Tsonga',
+            'tn': 'Tswana',
+            'tr': 'Turkish',
+            'tk': 'Turkmen',
+            'tw': 'Twi',
+            'ug': 'Uighur',
+            'uk': 'Ukrainian',
+            'ur': 'Urdu',
+            'uz': 'Uzbek',
+            've': 'Venda',
+            'vi': 'Vietnamese',
+            'vo': 'Volapük',
+            'wa': 'Walloon',
+            'cy': 'Welsh',
+            'fy': 'Western Frisian',
+            'wo': 'Wolof',
+            'xh': 'Xhosa',
+            'yi': 'Yiddish',
+            'yo': 'Yoruba',
+            'za': 'Zhuang',
+            'zu': 'Zulu'
+        }
+
+        r = 'Unknown'
+        if code in hash_data:
+            r = hash_data[code]
+
+        return r
+
+    def get_document_type(self, code):
+        # https://api.crossref.org/types
+        hash_data = {
+            'book': 'Book',
+            'book-chapter': 'Book Chapter',
+            'book-section': 'Book Section',
+            'book-series': 'Book Series',
+            'book-set': 'Book Set',
+            'book-track': 'Book Track',
+            'component': 'Component',
+            'dataset': 'Dataset',
+            'dissertation': 'Dissertation',
+            'edited-book': 'Edited Book',
+            'journal': 'Journal',
+            'journal-article': 'Article',
+            'journal-issue': 'Journal Issue',
+            'journal-volume': 'Journal Volume',
+            'monograph': 'Monograph',
+            'other': 'Unknown Type',
+            'book-part': 'Book Part',
+            'peer-review': 'Review',
+            'posted-content': 'Posted Content',
+            'proceedings': 'Proceedings',
+            'proceedings-article': 'Article; Proceedings Paper',
+            'proceedings-series': 'Proceedings Series',
+            'reference-book': 'Reference Book',
+            'reference-entry': 'Reference Entry',
+            'report': 'Report',
+            'report-series': 'Report Series',
+            'standard': 'Standard',
+            'standard-series': 'Standard Series'
+        }
+
+        r = 'Unknown Type'
+        if code in hash_data:
+            r = hash_data[code]
+
+        return r
+
     def get_complement(self, doi):
         try:
             works = Works()
@@ -202,13 +436,32 @@ class RemoveDuplicate:
 
             year = None
             cited_by = None
+            language = None
+            document_type = None
             if response is not None:
-                year = response[self.crossref_created][self.crossref_created_date_parts][0][0]
-                cited_by = response[self.crossref_cited_by]
+                try:
+                    year = response[self.crossref_created][self.crossref_created_date_parts][0][0]
+                except Exception as e:
+                    pass
 
-            return year, cited_by
+                try:
+                    cited_by = response[self.crossref_cited_by]
+                except Exception as e:
+                    pass
+
+                try:
+                    language = self.get_language(response[self.crossref_language])
+                except Exception as e:
+                    pass
+
+                try:
+                    document_type = self.get_document_type(response[self.crossref_type])
+                except Exception as e:
+                    pass
+
+            return year, cited_by, language, document_type
         except Exception as e:
-            return None, None
+            return None, None, None, None
 
     def save_xls(self, dict_unique, dict_duplicates):
 
@@ -220,23 +473,25 @@ class RemoveDuplicate:
                     col_doi = item[self.xls_col_doi]
                     col_year = item[self.xls_col_year]
                     col_cited_by = item[self.xls_col_cited_by]
+                    col_language = item[self.xls_col_languaje]
+                    col_document_type = item[self.xls_col_document_type]
 
                     if pbar:
-                        if col_year is None or col_cited_by is None:
-                            if col_year is None and col_cited_by is None:
-                                col_year, col_cited_by = self.get_complement(col_doi)
-                            elif col_year is None:
-                                col_year, _ = self.get_complement(col_doi)
-                            elif col_cited_by is None:
-                                _, col_cited_by = self.get_complement(col_doi)
+                        if col_year is None or col_cited_by is None or col_language is None or col_document_type is None:
+                            _year, _cited_by, _language, _document_type = self.get_complement(col_doi)
+
+                            col_year = _year if col_year is None else col_year
+                            col_cited_by = _cited_by if col_cited_by is None else col_cited_by
+                            col_language = _language if col_language is None else col_language
+                            col_document_type = _document_type if col_document_type is None else col_document_type
                             pbar.update(1)
 
                     worksheet.write(irow, icol + 0, irow, styles_rows)
                     worksheet.write(irow, icol + 1, item[self.xls_col_title], styles_rows)
                     worksheet.write(irow, icol + 2, col_year, styles_rows)
                     worksheet.write(irow, icol + 3, col_doi, styles_rows)
-                    worksheet.write(irow, icol + 4, item[self.xls_col_document_type], styles_rows)
-                    worksheet.write(irow, icol + 5, item[self.xls_col_languaje], styles_rows)
+                    worksheet.write(irow, icol + 4, col_document_type, styles_rows)
+                    worksheet.write(irow, icol + 5, col_language, styles_rows)
                     worksheet.write(irow, icol + 6, col_cited_by, styles_rows)
                     worksheet.write(irow, icol + 7, item[self.xls_col_authors], styles_rows)
                     worksheet.write(irow, icol + 8, item[self.xls_col_repository], styles_rows)
@@ -294,7 +549,7 @@ class RemoveDuplicate:
                                                  'valign': 'vcenter'})
         cell_format_row = workbook.add_format({'text_wrap': True, 'valign': 'top'})
 
-        self.show_print("Getting additional information from Crossref [Year, Cited by]", [self.LOG_FILE])
+        self.show_print("Getting additional information from Crossref [Document Type, Language, Year, Cited by]", [self.LOG_FILE])
         create_sheet(workbook, self.XLS_SHEET_DETAIL, dict_unique, cell_format_title, cell_format_row)
         create_sheet(workbook, self.XLS_SHEET_DUPLICATES, dict_duplicates, cell_format_title, cell_format_row)
         self.show_print("", [self.LOG_FILE])
