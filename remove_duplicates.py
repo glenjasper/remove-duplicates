@@ -9,6 +9,8 @@ import xlsxwriter
 from tqdm import tqdm
 from openpyxl import load_workbook
 from crossref.restful import Works
+from colorama import init
+init()
 
 def menu(args):
     parser = argparse.ArgumentParser(description = "This script eliminates the duplicated records from formatted .xlsx files from Scopus, Web of Science, PubMed, or Dimensions. Is mandatory that there be at least 2 different files from 2 different databases.", epilog = "Thank you!")
