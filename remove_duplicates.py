@@ -13,7 +13,7 @@ from colorama import init
 init()
 
 def menu(args):
-    parser = argparse.ArgumentParser(description = "This script eliminates the duplicated records from formatted .xlsx files from Scopus, Web of Science, PubMed, or Dimensions. Is mandatory that there be at least 2 different files from 2 different databases.", epilog = "Thank you!")
+    parser = argparse.ArgumentParser(description = "This script eliminates the duplicated records from formatted .xlsx files from Scopus, Web of Science, PubMed, PubMed Central or Dimensions. Is mandatory that there be at least 2 different files from 2 different databases.", epilog = "Thank you!")
     parser.add_argument("-f", "--files", required = True, help = ".xlsx files separated by comma")
     parser.add_argument("-o", "--output", help = "Output folder")
     parser.add_argument("--version", action = "version", version = "%s %s" % ('%(prog)s', orr.VERSION))
@@ -39,10 +39,12 @@ def menu(args):
             orr.XLS_FILE_WOS = this_file
         elif os.path.basename(this_file) == orr.NAME_XLS_FILE_PUBMED:
             orr.XLS_FILE_PUBMED = this_file
+        elif os.path.basename(this_file) == orr.NAME_XLS_FILE_PUBMED_CENTRAL:
+            orr.XLS_FILE_PUBMED_CENTRAL = this_file
         elif os.path.basename(this_file) == orr.NAME_XLS_FILE_DIMENSIONS:
             orr.XLS_FILE_DIMENSIONS = this_file
 
-    if args.output is not None:
+    if args.output:
         output_name = os.path.basename(args.output)
         output_path = os.path.dirname(args.output)
         if output_path is None or output_path == "":
@@ -75,6 +77,7 @@ class RemoveDuplicate:
         self.REPOSITORY_SCOPUS = "Scopus"
         self.REPOSITORY_WOS = "Web of Science"
         self.REPOSITORY_PUBMED = "PubMed"
+        self.REPOSITORY_PUBMED_CENTRAL = "PubMed Central"
         self.REPOSITORY_DIMENSIONS = "Dimensions"
 
         # Xls Summary
@@ -82,10 +85,12 @@ class RemoveDuplicate:
         self.XLS_FILE_SCOPUS = None
         self.XLS_FILE_WOS = None
         self.XLS_FILE_PUBMED = None
+        self.XLS_FILE_PUBMED_CENTRAL = None
         self.XLS_FILE_DIMENSIONS = None
         self.NAME_XLS_FILE_SCOPUS = 'input_scopus.xlsx'
         self.NAME_XLS_FILE_WOS = 'input_wos.xlsx'
         self.NAME_XLS_FILE_PUBMED = 'input_pubmed.xlsx'
+        self.NAME_XLS_FILE_PUBMED_CENTRAL = 'input_pmc.xlsx'
         self.NAME_XLS_FILE_DIMENSIONS = 'input_dimensions.xlsx'
         # Output
         self.XLS_FILE_OUTPUT = 'summary_unique_dois.xlsx'
@@ -140,7 +145,7 @@ class RemoveDuplicate:
         msg_print = message
         msg_write = message
 
-        if font is not None:
+        if font:
             msg_print = "%s%s%s" % (font, msg_print, self.END)
 
         if showdate is True:
@@ -149,9 +154,9 @@ class RemoveDuplicate:
             msg_write = "%s %s" % (_time, message)
 
         print(msg_print, end = end)
-        if logs is not None:
+        if logs:
             for log in logs:
-                if log is not None:
+                if log:
                     with open(log, 'a', encoding = 'utf-8') as f:
                         f.write("%s\n" % msg_write)
                         f.close()
@@ -178,10 +183,19 @@ class RemoveDuplicate:
 
     def check_path(self, path):
         _check = False
-        if path is not None:
+        if path:
             if len(path) > 0 and os.path.exists(path):
                 _check = True
         return _check
+
+    def remove_endpoint(self, text):
+        _text = text.strip()
+
+        while(_text[-1] == '.'):
+            _text = _text[0:len(_text) - 1]
+            _text = _text.strip()
+
+        return _text
 
     def check_doi(self, doi):
         try:
@@ -190,7 +204,7 @@ class RemoveDuplicate:
 
             is_valid = False
             status = None
-            if response is not None:
+            if response:
                 status = response[self.crossref_title][0]
                 if status != self.status_inactive_doi:
                     is_valid = True
@@ -440,7 +454,7 @@ class RemoveDuplicate:
             cited_by = None
             language = None
             document_type = None
-            if response is not None:
+            if response:
                 try:
                     year = response[self.crossref_created][self.crossref_created_date_parts][0][0]
                 except Exception as e:
@@ -581,7 +595,7 @@ class RemoveDuplicate:
                 elif index_j == 3:
                     column_name = self.xls_col_doi
                     doi = cell.value
-                    if doi is not None:
+                    if doi:
                         dois.append(doi)
                 elif index_j == 4:
                     column_name = self.xls_col_document_type
@@ -591,7 +605,12 @@ class RemoveDuplicate:
                     column_name = self.xls_col_cited_by
                 elif index_j == 7:
                     column_name = self.xls_col_authors
-                collection.update({column_name: cell.value})
+
+                _value = cell.value
+                if column_name == self.xls_col_title:
+                    _value = self.remove_endpoint(cell.value)
+
+                collection.update({column_name: _value})
 
             if len(collection) > 0:
                 file_collection.update({index_i: collection})
@@ -605,6 +624,8 @@ class RemoveDuplicate:
             self.DICT_XLS_FILES.update({self.REPOSITORY_WOS: self.XLS_FILE_WOS})
         if self.XLS_FILE_PUBMED:
             self.DICT_XLS_FILES.update({self.REPOSITORY_PUBMED: self.XLS_FILE_PUBMED})
+        if self.XLS_FILE_PUBMED_CENTRAL:
+            self.DICT_XLS_FILES.update({self.REPOSITORY_PUBMED_CENTRAL: self.XLS_FILE_PUBMED_CENTRAL})
         if self.XLS_FILE_DIMENSIONS:
             self.DICT_XLS_FILES.update({self.REPOSITORY_DIMENSIONS: self.XLS_FILE_DIMENSIONS})
 
@@ -678,7 +699,7 @@ def main(args):
                 flag_unique = False
 
                 title = row[orr.xls_col_title]
-                if title is not None:
+                if title:
                     title = title.strip().lower()
                     if title not in nr_title:
                         nr_title.append(title)
@@ -696,7 +717,7 @@ def main(args):
 
                 doi = row[orr.xls_col_doi]
                 title = row[orr.xls_col_title]
-                if title is not None:
+                if title:
                     title = title.strip().lower()
 
                 if title in re_title:

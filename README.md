@@ -2,7 +2,7 @@ remove-duplicates
 ======================
 [![License](https://poser.pugx.org/badges/poser/license.svg)](./LICENSE)
 
-This script eliminates the duplicated records from formatted .xlsx files from [Scopus](https://www.scopus.com), [Web of Science](https://clarivate.com/webofsciencegroup/solutions/web-of-science), [PubMed](https://www.ncbi.nlm.nih.gov/pubmed) or [Dimensions](https://app.dimensions.ai). Is mandatory that there be at least 2 different files from 2 different databases.
+This script eliminates the duplicated records from formatted .xlsx files from [Scopus](https://www.scopus.com), [Web of Science](https://clarivate.com/webofsciencegroup/solutions/web-of-science), [PubMed](https://www.ncbi.nlm.nih.gov/pubmed), [PubMed Central](https://www.ncbi.nlm.nih.gov/pmc) or [Dimensions](https://app.dimensions.ai). Is mandatory that there be at least 2 different files from 2 different databases.
 
 ## Table of content
 
@@ -31,7 +31,6 @@ This script eliminates the duplicated records from formatted .xlsx files from [S
   $ sudo pip3 install openpyxl
   $ sudo pip3 install xlsxwriter
   $ sudo pip3 install crossrefapi
-  $ sudo pip3 install tqdm
   $ sudo pip3 install colorama
 ```
 
@@ -62,8 +61,8 @@ You can [download](https://github.com/glenjasper/remove-duplicates/archive/maste
   usage: remove_duplicates.py [-h] -f FILES [-o OUTPUT] [--version]
 
   This script eliminates the duplicated records from formatted .xlsx files from
-  Scopus, Web of Science, PubMed, or Dimensions. Is mandatory that there be at
-  least 2 different files from 2 different databases.
+  Scopus, Web of Science, PubMed, PubMed Central or Dimensions. Is mandatory
+  that there be at least 2 different files from 2 different databases.
 
   optional arguments:
     -h, --help            show this help message and exit
@@ -81,7 +80,7 @@ You can [download](https://github.com/glenjasper/remove-duplicates/archive/maste
 * [Glen Jasper](https://github.com/glenjasper)
 
 ## Organization
-* [Molecular and Computational Biology of Fungi Laboratory](http://lbmcf.pythonanywhere.com) (LBMCF, ICB - **UFMG**, Belo Horizonte, Brazil).
+* [Molecular and Computational Biology of Fungi Laboratory](https://sites.icb.ufmg.br/lbmcf/index.html) (LBMCF, ICB - **UFMG**, Belo Horizonte, Brazil).
 
 ## License
 
