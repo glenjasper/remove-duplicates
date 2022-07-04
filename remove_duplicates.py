@@ -545,8 +545,10 @@ class RemoveDuplicate:
             for irow, item in dictionary.items():
                 col_year = item[self.xls_col_year]
                 col_cited_by = item[self.xls_col_cited_by]
+                col_language = item[self.xls_col_languaje]
+                col_document_type = item[self.xls_col_document_type]
 
-                if col_year is None or col_cited_by is None:
+                if col_year is None or col_cited_by is None or col_language is None or col_document_type is None:
                     total += 1
 
             if sheet_type == self.XLS_SHEET_DETAIL:
@@ -608,7 +610,8 @@ class RemoveDuplicate:
 
                 _value = cell.value
                 if column_name == self.xls_col_title:
-                    _value = self.remove_endpoint(cell.value)
+                    if cell.value:
+                        _value = self.remove_endpoint(cell.value)
 
                 collection.update({column_name: _value})
 
