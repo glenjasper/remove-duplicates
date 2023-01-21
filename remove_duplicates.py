@@ -29,8 +29,8 @@ def menu(args):
 
         this_file = os.path.join(file_path, file_name)
         if not orr.check_path(this_file):
-            orr.show_print("%s: error: the file '%s' doesn't exist" % (os.path.basename(__file__), this_file), showdate = False)
-            orr.show_print("%s: error: the following arguments are required: -f/--files" % os.path.basename(__file__), showdate = False)
+            orr.show_print("%s: error: the file '%s' doesn't exist" % (os.path.basename(__file__), this_file), showdate = False, font = oscihub.YELLOW)
+            orr.show_print("%s: error: the following arguments are required: -f/--files" % os.path.basename(__file__), showdate = False, font = oscihub.YELLOW)
             exit()
 
         if os.path.basename(this_file) == orr.NAME_XLS_FILE_SCOPUS:
@@ -53,7 +53,7 @@ def menu(args):
         orr.OUTPUT_PATH = os.path.join(output_path, output_name)
         created = orr.create_directory(orr.OUTPUT_PATH)
         if not created:
-            orr.show_print("%s: error: Couldn't create folder '%s'" % (os.path.basename(__file__), orr.OUTPUT_PATH), showdate = False)
+            orr.show_print("%s: error: Couldn't create folder '%s'" % (os.path.basename(__file__), orr.OUTPUT_PATH), showdate = False, font = oscihub.YELLOW)
             exit()
     else:
         orr.OUTPUT_PATH = os.getcwd().strip()
