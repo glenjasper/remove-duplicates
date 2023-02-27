@@ -12,7 +12,7 @@ from crossref.restful import Works
 from colorama import init
 init()
 
-def menu(args):
+def menu():
     parser = argparse.ArgumentParser(description = "This script eliminates the duplicated records from formatted .xlsx files from Scopus, Web of Science, PubMed, PubMed Central or Dimensions. Is mandatory that there be at least 2 different files from 2 different databases.", epilog = "Thank you!")
     parser.add_argument("-f", "--files", required = True, help = ".xlsx files separated by comma")
     parser.add_argument("-o", "--output", help = "Output folder")
@@ -29,8 +29,8 @@ def menu(args):
 
         this_file = os.path.join(file_path, file_name)
         if not orr.check_path(this_file):
-            orr.show_print("%s: error: the file '%s' doesn't exist" % (os.path.basename(__file__), this_file), showdate = False, font = oscihub.YELLOW)
-            orr.show_print("%s: error: the following arguments are required: -f/--files" % os.path.basename(__file__), showdate = False, font = oscihub.YELLOW)
+            orr.show_print("%s: error: the file '%s' doesn't exist" % (os.path.basename(__file__), this_file), showdate = False, font = orr.YELLOW)
+            orr.show_print("%s: error: the following arguments are required: -f/--files" % os.path.basename(__file__), showdate = False, font = orr.YELLOW)
             exit()
 
         if os.path.basename(this_file) == orr.NAME_XLS_FILE_SCOPUS:
@@ -53,7 +53,7 @@ def menu(args):
         orr.OUTPUT_PATH = os.path.join(output_path, output_name)
         created = orr.create_directory(orr.OUTPUT_PATH)
         if not created:
-            orr.show_print("%s: error: Couldn't create folder '%s'" % (os.path.basename(__file__), orr.OUTPUT_PATH), showdate = False, font = oscihub.YELLOW)
+            orr.show_print("%s: error: Couldn't create folder '%s'" % (os.path.basename(__file__), orr.OUTPUT_PATH), showdate = False, font = orr.YELLOW)
             exit()
     else:
         orr.OUTPUT_PATH = os.getcwd().strip()
@@ -632,10 +632,10 @@ class RemoveDuplicate:
         if self.XLS_FILE_DIMENSIONS:
             self.DICT_XLS_FILES.update({self.REPOSITORY_DIMENSIONS: self.XLS_FILE_DIMENSIONS})
 
-def main(args):
+def main():
     try:
         start = orr.start_time()
-        menu(args)
+        menu()
 
         orr.LOG_FILE = os.path.join(orr.OUTPUT_PATH, orr.LOG_NAME)
         orr.XLS_FILE_OUTPUT = os.path.join(orr.OUTPUT_PATH, orr.XLS_FILE_OUTPUT)
@@ -780,4 +780,4 @@ def main(args):
 
 if __name__ == '__main__':
     orr = RemoveDuplicate()
-    main(sys.argv)
+    main()
