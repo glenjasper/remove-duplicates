@@ -94,12 +94,14 @@ class RemoveDuplicate:
         self.NAME_XLS_FILE_DIMENSIONS = 'input_dimensions.xlsx'
         # Output
         self.XLS_FILE_OUTPUT = 'summary_unique_dois.xlsx'
-        self.XLS_SHEET_DETAIL = 'Detail'
+        self.XLS_SHEET_UNIQUE = 'Unique'
+        self.XLS_SHEET_WITHOUT_DOI = 'Without DOI'
         self.XLS_SHEET_DUPLICATES = 'Duplicates'
 
         # Xls Columns
         self.xls_col_item = 'Item'
         self.xls_col_title = 'Title'
+        self.xls_col_abstract = 'Abstract'
         self.xls_col_year = 'Year'
         self.xls_col_doi = 'DOI'
         self.xls_col_document_type = 'Document Type'
@@ -114,6 +116,7 @@ class RemoveDuplicate:
 
         self.xls_columns = [self.xls_col_item,
                             self.xls_col_title,
+                            self.xls_col_abstract,
                             self.xls_col_year,
                             self.xls_col_doi,
                             self.xls_col_document_type,
@@ -124,6 +127,7 @@ class RemoveDuplicate:
 
         # Crossref API
         self.crossref_title = 'container-title'
+        self.crossref_abstract = 'abstract'
         self.crossref_cited_by = 'is-referenced-by-count'
         self.crossref_created = 'created'
         self.crossref_created_date_parts = 'date-parts'
@@ -450,11 +454,33 @@ class RemoveDuplicate:
             works = Works()
             response = works.doi(doi)
 
+            # response['reference'] = ''
+            # pprint(response)
+
+            abstract = None
             year = None
             cited_by = None
             language = None
             document_type = None
             if response:
+                try:
+                    abstract = response[self.crossref_abstract]
+                    abstract = abstract.replace('\n', ' ')
+                    abstract = abstract.replace('<jats:title>', '').replace('</jats:title>', ': ')
+                    abstract = abstract.replace('<jats:sec>', '').replace('</jats:sec>', '')
+                    abstract = abstract.replace('<jats:p>', '').replace('</jats:p>', '')
+                    abstract = abstract.replace('<jats:italic>', '').replace('</jats:italic>', '')
+                    abstract = abstract.replace('<jats:bold>', '').replace('</jats:bold>', '')
+                    abstract = abstract.replace('<jats:sup>', '').replace('</jats:sup>', '')
+                    abstract = abstract.replace('<jats:sub>', '').replace('</jats:sub>', '')
+
+                    for _ in range(5):
+                        abstract = abstract.replace('  ', ' ')
+
+                    abstract = abstract.strip()
+                except Exception as e:
+                    pass
+
                 try:
                     year = response[self.crossref_created][self.crossref_created_date_parts][0][0]
                 except Exception as e:
@@ -475,11 +501,11 @@ class RemoveDuplicate:
                 except Exception as e:
                     pass
 
-            return year, cited_by, language, document_type
+            return abstract, year, cited_by, language, document_type
         except Exception as e:
-            return None, None, None, None
+            return None, None, None, None, None
 
-    def save_xls(self, dict_unique, dict_duplicates):
+    def save_xls(self, dict_unique, dict_without_doi, dict_duplicates):
 
         def create_sheet(oworkbook, sheet_type, dictionary, styles_title, styles_rows):
 
@@ -487,15 +513,17 @@ class RemoveDuplicate:
                 icol = 0
                 for irow, item in dictionary.items():
                     col_doi = item[self.xls_col_doi]
+                    col_abstract = item[self.xls_col_abstract]
                     col_year = item[self.xls_col_year]
                     col_cited_by = item[self.xls_col_cited_by]
                     col_language = item[self.xls_col_languaje]
                     col_document_type = item[self.xls_col_document_type]
 
                     if pbar:
-                        if col_year is None or col_cited_by is None or col_language is None or col_document_type is None:
-                            _year, _cited_by, _language, _document_type = self.get_complement(col_doi)
+                        if col_abstract is None or col_year is None or col_cited_by is None or col_language is None or col_document_type is None:
+                            _abstract, _year, _cited_by, _language, _document_type = self.get_complement(col_doi)
 
+                            col_abstract = _abstract if col_abstract is None else col_abstract
                             col_year = _year if col_year is None else col_year
                             col_cited_by = _cited_by if col_cited_by is None else col_cited_by
                             col_language = _language if col_language is None else col_language
@@ -504,15 +532,16 @@ class RemoveDuplicate:
 
                     worksheet.write(irow, icol + 0, irow, styles_rows)
                     worksheet.write(irow, icol + 1, item[self.xls_col_title], styles_rows)
-                    worksheet.write(irow, icol + 2, col_year, styles_rows)
-                    worksheet.write(irow, icol + 3, col_doi, styles_rows)
-                    worksheet.write(irow, icol + 4, col_document_type, styles_rows)
-                    worksheet.write(irow, icol + 5, col_language, styles_rows)
-                    worksheet.write(irow, icol + 6, col_cited_by, styles_rows)
-                    worksheet.write(irow, icol + 7, item[self.xls_col_authors], styles_rows)
-                    worksheet.write(irow, icol + 8, item[self.xls_col_repository], styles_rows)
+                    worksheet.write(irow, icol + 2, col_abstract, styles_rows)
+                    worksheet.write(irow, icol + 3, col_year, styles_rows)
+                    worksheet.write(irow, icol + 4, col_doi, styles_rows)
+                    worksheet.write(irow, icol + 5, col_document_type, styles_rows)
+                    worksheet.write(irow, icol + 6, col_language, styles_rows)
+                    worksheet.write(irow, icol + 7, col_cited_by, styles_rows)
+                    worksheet.write(irow, icol + 8, item[self.xls_col_authors], styles_rows)
+                    worksheet.write(irow, icol + 9, item[self.xls_col_repository], styles_rows)
                     if sheet_type == self.XLS_SHEET_DUPLICATES:
-                        worksheet.write(irow, icol + 9, item[self.xls_col_duplicate_type], styles_rows)
+                        worksheet.write(irow, icol + 10, item[self.xls_col_duplicate_type], styles_rows)
 
             if sheet_type == self.XLS_SHEET_DUPLICATES:
                 self.xls_columns.append(self.xls_col_duplicate_type)
@@ -530,31 +559,33 @@ class RemoveDuplicate:
 
             # Add rows
             worksheet.set_column(first_col = 0, last_col = 0, width = 7)  # Column A:A
-            worksheet.set_column(first_col = 1, last_col = 1, width = 40) # Column B:B
-            worksheet.set_column(first_col = 2, last_col = 2, width = 8)  # Column C:C
-            worksheet.set_column(first_col = 3, last_col = 3, width = 33) # Column D:D
-            worksheet.set_column(first_col = 4, last_col = 4, width = 18) # Column E:E
-            worksheet.set_column(first_col = 5, last_col = 5, width = 12) # Column F:F
-            worksheet.set_column(first_col = 6, last_col = 6, width = 11) # Column G:G
-            worksheet.set_column(first_col = 7, last_col = 7, width = 36) # Column H:H
-            worksheet.set_column(first_col = 8, last_col = 8, width = 13) # Column I:I
+            worksheet.set_column(first_col = 1, last_col = 1, width = 30) # Column B:B
+            worksheet.set_column(first_col = 2, last_col = 2, width = 33) # Column C:C
+            worksheet.set_column(first_col = 3, last_col = 3, width = 8)  # Column D:D
+            worksheet.set_column(first_col = 4, last_col = 4, width = 30) # Column E:E
+            worksheet.set_column(first_col = 5, last_col = 5, width = 18) # Column F:F
+            worksheet.set_column(first_col = 6, last_col = 6, width = 12) # Column G:G
+            worksheet.set_column(first_col = 7, last_col = 7, width = 11) # Column H:H
+            worksheet.set_column(first_col = 8, last_col = 8, width = 18) # Column I:I
+            worksheet.set_column(first_col = 9, last_col = 9, width = 13) # Column J:J
             if sheet_type == self.XLS_SHEET_DUPLICATES:
-                worksheet.set_column(first_col = 9, last_col = 9, width = 19) # Column J:J
+                worksheet.set_column(first_col = 10, last_col = 10, width = 17) # Column K:K
 
             total = 0
             for irow, item in dictionary.items():
+                col_abstract = item[self.xls_col_abstract]
                 col_year = item[self.xls_col_year]
                 col_cited_by = item[self.xls_col_cited_by]
                 col_language = item[self.xls_col_languaje]
                 col_document_type = item[self.xls_col_document_type]
 
-                if col_year is None or col_cited_by is None or col_language is None or col_document_type is None:
+                if col_abstract is None or col_year is None or col_cited_by is None or col_language is None or col_document_type is None:
                     total += 1
 
-            if sheet_type == self.XLS_SHEET_DETAIL:
+            if sheet_type == self.XLS_SHEET_UNIQUE:
                 with tqdm(total = total) as pbar:
                     add_row(pbar)
-            elif sheet_type == self.XLS_SHEET_DUPLICATES:
+            elif sheet_type in [self.XLS_SHEET_WITHOUT_DOI, self.XLS_SHEET_DUPLICATES]:
                 add_row()
 
         workbook = xlsxwriter.Workbook(self.XLS_FILE_OUTPUT)
@@ -567,16 +598,17 @@ class RemoveDuplicate:
                                                  'valign': 'vcenter'})
         cell_format_row = workbook.add_format({'text_wrap': True, 'valign': 'top'})
 
-        self.show_print("Getting additional information from Crossref [Document Type, Language, Year, Cited by]", [self.LOG_FILE])
-        create_sheet(workbook, self.XLS_SHEET_DETAIL, dict_unique, cell_format_title, cell_format_row)
+        self.show_print("Getting additional information from Crossref [Abstract, Document Type, Language, Year, Cited by]", [self.LOG_FILE])
+        create_sheet(workbook, self.XLS_SHEET_UNIQUE, dict_unique, cell_format_title, cell_format_row)
+        create_sheet(workbook, self.XLS_SHEET_WITHOUT_DOI, dict_without_doi, cell_format_title, cell_format_row)
         create_sheet(workbook, self.XLS_SHEET_DUPLICATES, dict_duplicates, cell_format_title, cell_format_row)
         self.show_print("", [self.LOG_FILE])
 
         workbook.close()
 
-    def read_xls_summary(self, xlsfile):
+    def read_xls_summary(self, xlsfile, this_sheet):
         workbook = load_workbook(filename = xlsfile, data_only = True)
-        sheet = workbook[self.XLS_SHEET_DETAIL]
+        sheet = workbook[this_sheet]
         rows = sheet.rows
 
         file_collection = {}
@@ -593,25 +625,31 @@ class RemoveDuplicate:
                 elif index_j == 1:
                     column_name = self.xls_col_title
                 elif index_j == 2:
-                    column_name = self.xls_col_year
+                    column_name = self.xls_col_abstract
                 elif index_j == 3:
+                    column_name = self.xls_col_year
+                elif index_j == 4:
                     column_name = self.xls_col_doi
                     doi = cell.value
                     if doi:
                         dois.append(doi)
-                elif index_j == 4:
-                    column_name = self.xls_col_document_type
                 elif index_j == 5:
-                    column_name = self.xls_col_languaje
+                    column_name = self.xls_col_document_type
                 elif index_j == 6:
-                    column_name = self.xls_col_cited_by
+                    column_name = self.xls_col_languaje
                 elif index_j == 7:
+                    column_name = self.xls_col_cited_by
+                elif index_j == 8:
                     column_name = self.xls_col_authors
 
                 _value = cell.value
                 if column_name == self.xls_col_title:
                     if cell.value:
                         _value = self.remove_endpoint(cell.value)
+
+                if this_sheet == self.XLS_SHEET_DUPLICATES:
+                    if index_j == 9:
+                        column_name = self.xls_col_duplicate_type
 
                 collection.update({column_name: _value})
 
@@ -632,37 +670,29 @@ class RemoveDuplicate:
         if self.XLS_FILE_DIMENSIONS:
             self.DICT_XLS_FILES.update({self.REPOSITORY_DIMENSIONS: self.XLS_FILE_DIMENSIONS})
 
-def main():
-    try:
-        start = orr.start_time()
-        menu()
+    def get_sheet_data(self):
+        self.show_print("Input files:", [self.LOG_FILE], font = self.GREEN)
+        dict_xlsx_files = self.DICT_XLS_FILES.copy()
 
-        orr.LOG_FILE = os.path.join(orr.OUTPUT_PATH, orr.LOG_NAME)
-        orr.XLS_FILE_OUTPUT = os.path.join(orr.OUTPUT_PATH, orr.XLS_FILE_OUTPUT)
-        orr.create_directory(orr.OUTPUT_PATH)
-        orr.get_list_files()
-        orr.show_print("#############################################################################", [orr.LOG_FILE], font = orr.BIGREEN)
-        orr.show_print("############################# Remove Deplicates #############################", [orr.LOG_FILE], font = orr.BIGREEN)
-        orr.show_print("#############################################################################", [orr.LOG_FILE], font = orr.BIGREEN)
-
-        orr.show_print("Input files:", [orr.LOG_FILE], font = orr.GREEN)
-        for index, (repository, file) in enumerate(orr.DICT_XLS_FILES.items()):
+        for index, (repository, file) in enumerate(dict_xlsx_files.items()):
             if index == 0:
                 base_repository = repository
-                base_file = file
-            orr.show_print("  %s" % file, [orr.LOG_FILE])
-        orr.show_print("", [orr.LOG_FILE])
+                base_xlsx_file = file
+            self.show_print("  %s" % file, [self.LOG_FILE])
+        self.show_print("", [self.LOG_FILE])
 
-        del orr.DICT_XLS_FILES[base_repository]
-        collection_base, dois_base = orr.read_xls_summary(base_file)
+        del dict_xlsx_files[base_repository]
+        collection_base, dois_base = self.read_xls_summary(base_xlsx_file, self.XLS_SHEET_UNIQUE)
+
+        # Set base repository
         for _, item in collection_base.items():
-            item.update({orr.xls_col_repository: base_repository})
+            item.update({self.xls_col_repository: base_repository})
 
         collect_duplicate = {}
         collect_unique = {}
-        for secondary_repository, secondary_file in orr.DICT_XLS_FILES.items():
+        for secondary_repository, secondary_file in dict_xlsx_files.items():
             # Load information
-            collection_secondary, dois_secondary = orr.read_xls_summary(secondary_file)
+            collection_secondary, dois_secondary = self.read_xls_summary(secondary_file, self.XLS_SHEET_UNIQUE)
 
             # Get DOIs
             dois_duplicate = list(set(dois_base) & set(dois_secondary))
@@ -673,10 +703,10 @@ def main():
             collect_unique_doi = {}
             index_u = 1
             for _, item in collection_base.items():
-                doi = item[orr.xls_col_doi]
+                doi = item[self.xls_col_doi]
                 if doi in dois_duplicate:
-                    repository = '%s/%s' % (item[orr.xls_col_repository], secondary_repository)
-                    item.update({orr.xls_col_repository: repository})
+                    repository = '%s/%s' % (item[self.xls_col_repository], secondary_repository)
+                    item.update({self.xls_col_repository: repository})
 
                 collect_unique_doi.update({index_u: item})
                 index_u += 1
@@ -684,10 +714,10 @@ def main():
             index_r = len(collect_duplicate) + 1
             index_u = len(collect_unique_doi) + 1
             for _, item in collection_secondary.items():
-                doi = item[orr.xls_col_doi]
-                item.update({orr.xls_col_repository: secondary_repository})
+                doi = item[self.xls_col_doi]
+                item.update({self.xls_col_repository: secondary_repository})
                 if doi in dois_duplicate:
-                    item[orr.xls_col_duplicate_type] = orr.xls_val_by_doi
+                    item[self.xls_col_duplicate_type] = self.xls_val_by_doi
                     collect_duplicate.update({index_r: item})
                     index_r += 1
 
@@ -701,7 +731,7 @@ def main():
             for _, row in collect_unique_doi.items():
                 flag_unique = False
 
-                title = row[orr.xls_col_title]
+                title = row[self.xls_col_title]
                 if title:
                     title = title.strip().lower()
                     if title not in nr_title:
@@ -718,8 +748,8 @@ def main():
             for _, row in collect_unique_doi.items():
                 flag_unique = False
 
-                doi = row[orr.xls_col_doi]
-                title = row[orr.xls_col_title]
+                doi = row[self.xls_col_doi]
+                title = row[self.xls_col_title]
                 if title:
                     title = title.strip().lower()
 
@@ -730,7 +760,7 @@ def main():
 
                     status = False
                     if not _is_valid:
-                        status = orr.check_doi(doi)
+                        status = self.check_doi(doi)
 
                     if status:
                         flag_unique = True
@@ -740,12 +770,12 @@ def main():
                             flag_unique = True # forced
 
                     if _repository is None:
-                        _repository = row[orr.xls_col_repository]
+                        _repository = row[self.xls_col_repository]
 
                     if flag_unique:
-                        row[orr.xls_col_repository] = '%s/%s' % (_repository, secondary_repository)
+                        row[self.xls_col_repository] = '%s/%s' % (_repository, secondary_repository)
                     else:
-                        row[orr.xls_col_repository] = row[orr.xls_col_repository].split('/')[-1] # secondary_repository
+                        row[self.xls_col_repository] = row[self.xls_col_repository].split('/')[-1] # secondary_repository
 
                     nr_title_ctrl[title].update({'n_check': _n_check + 1})
                     nr_title_ctrl[title].update({'repository': _repository})
@@ -756,7 +786,7 @@ def main():
                     collect_unique.update({index_u: row})
                     index_u += 1
                 else:
-                    row[orr.xls_col_duplicate_type] = orr.xls_val_by_title
+                    row[self.xls_col_duplicate_type] = self.xls_val_by_title
                     collect_duplicate.update({index_r: row})
                     index_r += 1
 
@@ -764,10 +794,56 @@ def main():
             collection_base = collect_unique.copy()
             dois_base = []
             for _, item in collection_base.items():
-                dois_base.append(item[orr.xls_col_doi])
+                dois_base.append(item[self.xls_col_doi])
+
+        return collect_unique, collect_duplicate
+
+    def get_sheet_data_complement(self, collection_duplicates):
+        collect_without_doi = {}
+        collect_duplicates = {}
+        index_wod = 1
+        index_dup = 1
+        for repository, file in self.DICT_XLS_FILES.items():
+            # Without DOIs
+            dict_without_doi, _ = self.read_xls_summary(file, self.XLS_SHEET_WITHOUT_DOI)
+            for _, item in dict_without_doi.items():
+                item.update({self.xls_col_repository: repository})
+                collect_without_doi.update({index_wod: item})
+                index_wod += 1
+
+            # Duplicates
+            dict_duplicates, _ = self.read_xls_summary(file, self.XLS_SHEET_DUPLICATES)
+            for _, item in dict_duplicates.items():
+                item.update({self.xls_col_repository: repository})
+                collect_duplicates.update({index_dup: item})
+                index_dup += 1
+
+        # Join duplicates items
+        index = len(collection_duplicates) + 1
+        for _, item in collect_duplicates.items():
+            collection_duplicates.update({index: item})
+            index += 1
+
+        return collect_without_doi, collection_duplicates
+
+def main():
+    try:
+        start = orr.start_time()
+        menu()
+
+        orr.LOG_FILE = os.path.join(orr.OUTPUT_PATH, orr.LOG_NAME)
+        orr.XLS_FILE_OUTPUT = os.path.join(orr.OUTPUT_PATH, orr.XLS_FILE_OUTPUT)
+        orr.create_directory(orr.OUTPUT_PATH)
+        orr.get_list_files()
+        orr.show_print("#############################################################################", [orr.LOG_FILE], font = orr.BIGREEN)
+        orr.show_print("############################# Remove Deplicates #############################", [orr.LOG_FILE], font = orr.BIGREEN)
+        orr.show_print("#############################################################################", [orr.LOG_FILE], font = orr.BIGREEN)
+
+        collect_unique, collect_duplicate = orr.get_sheet_data()
+        collect_without_doi, collect_duplicates = orr.get_sheet_data_complement(collect_duplicate)
 
         # Create summary file
-        orr.save_xls(collect_unique, collect_duplicate)
+        orr.save_xls(collect_unique, collect_without_doi, collect_duplicates)
         orr.show_print("Output file: %s" % orr.XLS_FILE_OUTPUT, [orr.LOG_FILE], font = orr.GREEN)
 
         orr.show_print("", [orr.LOG_FILE])
