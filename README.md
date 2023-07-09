@@ -2,7 +2,7 @@ remove-duplicates
 ======================
 [![License](https://poser.pugx.org/badges/poser/license.svg)](./LICENSE)
 
-This script eliminates the duplicated records from formatted .xlsx files from [Scopus](https://www.scopus.com), [Web of Science](https://clarivate.com/webofsciencegroup/solutions/web-of-science), [PubMed](https://www.ncbi.nlm.nih.gov/pubmed), [PubMed Central](https://www.ncbi.nlm.nih.gov/pmc) or [Dimensions](https://app.dimensions.ai). Is mandatory that there be at least 2 different files from 2 different databases.
+This script eliminates the duplicated records from formatted .xlsx files from [Scopus](https://www.scopus.com), [Web of Science](https://clarivate.com/webofsciencegroup/solutions/web-of-science), [PubMed](https://www.ncbi.nlm.nih.gov/pubmed), [PubMed Central](https://www.ncbi.nlm.nih.gov/pmc), [Dimensions](https://app.dimensions.ai) or Google Scholar exported from [Publish or Perish](https://harzing.com/resources/publish-or-perish). Is mandatory that there be at least 2 different files from 2 different databases.
 
 ## Table of content
 
