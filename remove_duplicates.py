@@ -13,7 +13,7 @@ from colorama import init
 init()
 
 def menu():
-    parser = argparse.ArgumentParser(description = "This script eliminates the duplicated records from formatted .xlsx files from Scopus, Web of Science, PubMed, PubMed Central or Dimensions. Is mandatory that there be at least 2 different files from 2 different databases.", epilog = "Thank you!")
+    parser = argparse.ArgumentParser(description = "This script eliminates the duplicated records from formatted .xlsx files from Scopus, Web of Science, PubMed, PubMed Central, Dimensions or Google Scholar (Publish or Perish). Is mandatory that there be at least 2 different files from 2 different databases.", epilog = "Thank you!")
     parser.add_argument("-f", "--files", required = True, help = ".xlsx files separated by comma")
     parser.add_argument("-o", "--output", help = "Output folder")
     parser.add_argument("--version", action = "version", version = "%s %s" % ('%(prog)s', orr.VERSION))
@@ -43,6 +43,8 @@ def menu():
             orr.XLS_FILE_PUBMED_CENTRAL = this_file
         elif os.path.basename(this_file) == orr.NAME_XLS_FILE_DIMENSIONS:
             orr.XLS_FILE_DIMENSIONS = this_file
+        elif os.path.basename(this_file) == orr.NAME_XLS_FILE_GOOGLE_SCHOLAR:
+            orr.XLS_FILE_GOOGLE_SCHOLAR = this_file
 
     if args.output:
         output_name = os.path.basename(args.output)
@@ -79,6 +81,7 @@ class RemoveDuplicate:
         self.REPOSITORY_PUBMED = "PubMed"
         self.REPOSITORY_PUBMED_CENTRAL = "PubMed Central"
         self.REPOSITORY_DIMENSIONS = "Dimensions"
+        self.REPOSITORY_GOOGLE_SCHOLAR = "Google Scholar"
 
         # Xls Summary
         # Input
@@ -87,11 +90,13 @@ class RemoveDuplicate:
         self.XLS_FILE_PUBMED = None
         self.XLS_FILE_PUBMED_CENTRAL = None
         self.XLS_FILE_DIMENSIONS = None
+        self.XLS_FILE_GOOGLE_SCHOLAR = None
         self.NAME_XLS_FILE_SCOPUS = 'input_scopus.xlsx'
         self.NAME_XLS_FILE_WOS = 'input_wos.xlsx'
         self.NAME_XLS_FILE_PUBMED = 'input_pubmed.xlsx'
         self.NAME_XLS_FILE_PUBMED_CENTRAL = 'input_pmc.xlsx'
         self.NAME_XLS_FILE_DIMENSIONS = 'input_dimensions.xlsx'
+        self.NAME_XLS_FILE_GOOGLE_SCHOLAR = 'input_scholar.xlsx'
         # Output
         self.XLS_FILE_OUTPUT = 'summary_unique_dois.xlsx'
         self.XLS_SHEET_UNIQUE = 'Unique'
@@ -669,6 +674,8 @@ class RemoveDuplicate:
             self.DICT_XLS_FILES.update({self.REPOSITORY_PUBMED_CENTRAL: self.XLS_FILE_PUBMED_CENTRAL})
         if self.XLS_FILE_DIMENSIONS:
             self.DICT_XLS_FILES.update({self.REPOSITORY_DIMENSIONS: self.XLS_FILE_DIMENSIONS})
+        if self.XLS_FILE_GOOGLE_SCHOLAR:
+            self.DICT_XLS_FILES.update({self.REPOSITORY_GOOGLE_SCHOLAR: self.XLS_FILE_GOOGLE_SCHOLAR})
 
     def get_sheet_data(self):
         self.show_print("Input files:", [self.LOG_FILE], font = self.GREEN)
@@ -845,6 +852,9 @@ def main():
         # Create summary file
         orr.save_xls(collect_unique, collect_without_doi, collect_duplicates)
         orr.show_print("Output file: %s" % orr.XLS_FILE_OUTPUT, [orr.LOG_FILE], font = orr.GREEN)
+        orr.show_print("  Unique documents: %s" % len(collect_unique), [orr.LOG_FILE])
+        orr.show_print("  Duplicate documents: %s" % len(collect_duplicates), [orr.LOG_FILE])
+        orr.show_print("  Documents without DOI: %s" % len(collect_without_doi), [orr.LOG_FILE])
 
         orr.show_print("", [orr.LOG_FILE])
         orr.show_print(orr.finish_time(start, "Elapsed time"), [orr.LOG_FILE])
