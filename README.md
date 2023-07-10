@@ -59,22 +59,24 @@ You can [download](https://github.com/glenjasper/remove-duplicates/archive/maste
 
 ## How To Use
 
-```sh  
-  usage: remove_duplicates.py [-h] -f FILES [-o OUTPUT] [--version]
+```sh
+$ python3 remove_duplicates.py --help
+usage: remove_duplicates.py [-h] -f FILES [-o OUTPUT] [--version]
 
-  This script eliminates the duplicated records from formatted .xlsx files from
-  Scopus, Web of Science, PubMed, PubMed Central or Dimensions. Is mandatory
-  that there be at least 2 different files from 2 different databases.
+This script eliminates the duplicated records from formatted .xlsx files from Scopus,
+Web of Science, PubMed, PubMed Central, Dimensions or Google Scholar (Publish or
+Perish). Is mandatory that there be at least 2 different files from 2 different
+databases.
 
-  optional arguments:
-    -h, --help            show this help message and exit
-    -f FILES, --files FILES
-                          .xlsx files separated by comma
-    -o OUTPUT, --output OUTPUT
-                          Output folder
-    --version             show program's version number and exit
+optional arguments:
+  -h, --help            show this help message and exit
+  -f FILES, --files FILES
+                        .xlsx files separated by comma
+  -o OUTPUT, --output OUTPUT
+                        Output folder
+  --version             show program's version number and exit
 
-  Thank you!
+Thank you!
 ```
 
 ## Author
