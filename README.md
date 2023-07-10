@@ -28,8 +28,9 @@ This script eliminates the duplicated records from formatted .xlsx files from [S
 
 ```sh
   $ sudo pip3 install argparse
-  $ sudo pip3 install openpyxl
   $ sudo pip3 install xlsxwriter
+  $ sudo pip3 install numpy
+  $ sudo pip3 install pandas
   $ sudo pip3 install crossrefapi
   $ sudo pip3 install tqdm
   $ sudo pip3 install colorama
