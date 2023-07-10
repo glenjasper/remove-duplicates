@@ -6,8 +6,9 @@ import time
 import argparse
 import traceback
 import xlsxwriter
+import numpy as np
+import pandas as pd
 from tqdm import tqdm
-from openpyxl import load_workbook
 from crossref.restful import Works
 from colorama import init
 init()
@@ -612,54 +613,36 @@ class RemoveDuplicate:
         workbook.close()
 
     def read_xls_summary(self, xlsfile, this_sheet):
-        workbook = load_workbook(filename = xlsfile, data_only = True)
-        sheet = workbook[this_sheet]
-        rows = sheet.rows
+        df = pd.read_excel(io = xlsfile, sheet_name = this_sheet)
+        # df = df.where(pd.notnull(df), None)
+        df = df.replace({np.nan: None})
+        # print(df)
 
         file_collection = {}
         dois = []
-        for index_i, row in enumerate(rows):
-            doi = None
+        for index, row in df.iterrows():
+            doi = row[self.xls_col_doi]
+            title = row[self.xls_col_title]
+            title = self.remove_endpoint(title) if title else title
+
             collection = {}
-            for index_j, cell in enumerate(row):
-                if cell.value == self.xls_col_item:
-                    break
-                column_name = None
-                if index_j == 0:
-                    column_name = self.xls_col_item
-                elif index_j == 1:
-                    column_name = self.xls_col_title
-                elif index_j == 2:
-                    column_name = self.xls_col_abstract
-                elif index_j == 3:
-                    column_name = self.xls_col_year
-                elif index_j == 4:
-                    column_name = self.xls_col_doi
-                    doi = cell.value
-                    if doi:
-                        dois.append(doi)
-                elif index_j == 5:
-                    column_name = self.xls_col_document_type
-                elif index_j == 6:
-                    column_name = self.xls_col_languaje
-                elif index_j == 7:
-                    column_name = self.xls_col_cited_by
-                elif index_j == 8:
-                    column_name = self.xls_col_authors
+            collection.update({self.xls_col_item: row[self.xls_col_item],
+                               self.xls_col_title: title,
+                               self.xls_col_abstract: row[self.xls_col_abstract],
+                               self.xls_col_year: row[self.xls_col_year],
+                               self.xls_col_doi: doi,
+                               self.xls_col_document_type: row[self.xls_col_document_type],
+                               self.xls_col_languaje: row[self.xls_col_languaje],
+                               self.xls_col_cited_by: row[self.xls_col_cited_by],
+                               self.xls_col_authors: row[self.xls_col_authors]})
 
-                _value = cell.value
-                if column_name == self.xls_col_title:
-                    if cell.value:
-                        _value = self.remove_endpoint(cell.value)
+            if this_sheet == self.XLS_SHEET_DUPLICATES:
+                collection.update({self.xls_col_duplicate_type: row[self.xls_col_duplicate_type]})
 
-                if this_sheet == self.XLS_SHEET_DUPLICATES:
-                    if index_j == 9:
-                        column_name = self.xls_col_duplicate_type
+            if doi:
+                dois.append(doi)
 
-                collection.update({column_name: _value})
-
-            if len(collection) > 0:
-                file_collection.update({index_i: collection})
+            file_collection.update({index + 1: collection})
 
         return file_collection, dois
 
