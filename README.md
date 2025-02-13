@@ -32,6 +32,7 @@ This script eliminates the duplicated records from formatted .xlsx files from [S
   $ sudo pip3 install numpy
   $ sudo pip3 install pandas
   $ sudo pip3 install crossrefapi
+  $ sudo pip3 install openpyxl
   $ sudo pip3 install tqdm
   $ sudo pip3 install colorama
 ```
