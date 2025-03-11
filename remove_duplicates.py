@@ -14,7 +14,7 @@ from colorama import init
 init()
 
 def menu():
-    parser = argparse.ArgumentParser(description = "This script eliminates the duplicated records from formatted .xlsx files from Scopus, Web of Science, PubMed, PubMed Central, Dimensions, Cochrane, Embase, IEEE, BVS, CAB, or Google Scholar (Publish or Perish). Is mandatory that there be at least 2 different files from 2 different databases.", epilog = "Thank you!")
+    parser = argparse.ArgumentParser(description = "This script eliminates the duplicated records from formatted .xlsx files from Scopus, Web of Science, PubMed, PubMed Central, Dimensions or Google Scholar (Publish or Perish). Is mandatory that there be at least 2 different files from 2 different databases.", epilog = "Thank you!")
     parser.add_argument("-f", "--files", required = True, help = ".xlsx files separated by comma")
     parser.add_argument("-o", "--output", help = "Output folder")
     parser.add_argument("--version", action = "version", version = "%s %s" % ('%(prog)s', orr.VERSION))
@@ -46,16 +46,6 @@ def menu():
             orr.XLS_FILE_DIMENSIONS = this_file
         elif os.path.basename(this_file) == orr.NAME_XLS_FILE_GOOGLE_SCHOLAR:
             orr.XLS_FILE_GOOGLE_SCHOLAR = this_file
-        elif os.path.basename(this_file) == orr.NAME_XLS_FILE_COCHRANE:
-            orr.XLS_FILE_COCHRANE = this_file
-        elif os.path.basename(this_file) == orr.NAME_XLS_FILE_EMBASE:
-            orr.XLS_FILE_EMBASE = this_file
-        elif os.path.basename(this_file) == orr.NAME_XLS_FILE_IEEE:
-            orr.XLS_FILE_IEEE = this_file
-        elif os.path.basename(this_file) == orr.NAME_XLS_FILE_BVS:
-            orr.XLS_FILE_BVS = this_file
-        elif os.path.basename(this_file) == orr.NAME_XLS_FILE_CAB:
-            orr.XLS_FILE_CAB = this_file
 
     if args.output:
         output_name = os.path.basename(args.output)
@@ -93,11 +83,6 @@ class RemoveDuplicate:
         self.REPOSITORY_PUBMED_CENTRAL = "PubMed Central"
         self.REPOSITORY_DIMENSIONS = "Dimensions"
         self.REPOSITORY_GOOGLE_SCHOLAR = "Google Scholar"
-        self.REPOSITORY_COCHRANE = "Cochrane"
-        self.REPOSITORY_EMBASE = "Embase"
-        self.REPOSITORY_IEEE = "IEEE"
-        self.REPOSITORY_BVS = "BVS"
-        self.REPOSITORY_CAB = "CAB"
 
         # Xls Summary
         # Input
@@ -107,23 +92,12 @@ class RemoveDuplicate:
         self.XLS_FILE_PUBMED_CENTRAL = None
         self.XLS_FILE_DIMENSIONS = None
         self.XLS_FILE_GOOGLE_SCHOLAR = None
-        self.XLS_FILE_COCHRANE = None
-        self.XLS_FILE_EMBASE = None
-        self.XLS_FILE_IEEE = None
-        self.XLS_FILE_BVS = None
-        self.XLS_FILE_CAB = None
         self.NAME_XLS_FILE_SCOPUS = 'input_scopus.xlsx'
         self.NAME_XLS_FILE_WOS = 'input_wos.xlsx'
         self.NAME_XLS_FILE_PUBMED = 'input_pubmed.xlsx'
         self.NAME_XLS_FILE_PUBMED_CENTRAL = 'input_pmc.xlsx'
         self.NAME_XLS_FILE_DIMENSIONS = 'input_dimensions.xlsx'
         self.NAME_XLS_FILE_GOOGLE_SCHOLAR = 'input_scholar.xlsx'
-        self.NAME_XLS_FILE_COCHRANE = 'input_cochrane.xlsx'
-        self.NAME_XLS_FILE_EMBASE = 'input_embase.xlsx'
-        self.NAME_XLS_FILE_IEEE = 'input_ieee.xlsx'
-        self.NAME_XLS_FILE_BVS = 'input_bvs.xlsx'
-        self.NAME_XLS_FILE_CAB = 'input_cab.xlsx'
-
         # Output
         self.XLS_FILE_OUTPUT = 'summary_unique_dois.xlsx'
         self.XLS_SHEET_UNIQUE = 'Unique'
@@ -685,16 +659,6 @@ class RemoveDuplicate:
             self.DICT_XLS_FILES.update({self.REPOSITORY_DIMENSIONS: self.XLS_FILE_DIMENSIONS})
         if self.XLS_FILE_GOOGLE_SCHOLAR:
             self.DICT_XLS_FILES.update({self.REPOSITORY_GOOGLE_SCHOLAR: self.XLS_FILE_GOOGLE_SCHOLAR})
-        if self.XLS_FILE_COCHRANE:
-            self.DICT_XLS_FILES.update({self.REPOSITORY_COCHRANE: self.XLS_FILE_COCHRANE})
-        if self.XLS_FILE_EMBASE:
-            self.DICT_XLS_FILES.update({self.REPOSITORY_EMBASE: self.XLS_FILE_EMBASE})
-        if self.XLS_FILE_IEEE:
-            self.DICT_XLS_FILES.update({self.REPOSITORY_IEEE: self.XLS_FILE_IEEE})
-        if self.XLS_FILE_BVS:
-            self.DICT_XLS_FILES.update({self.REPOSITORY_BVS: self.XLS_FILE_BVS})
-        if self.XLS_FILE_CAB:
-            self.DICT_XLS_FILES.update({self.REPOSITORY_CAB: self.XLS_FILE_CAB})
 
     def get_sheet_data(self):
         self.show_print("Input files:", [self.LOG_FILE], font = self.GREEN)
