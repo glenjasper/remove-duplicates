@@ -2,7 +2,7 @@ remove-duplicates
 ======================
 [![License](https://poser.pugx.org/badges/poser/license.svg)](./LICENSE)
 
-This script eliminates the duplicated records from formatted .xlsx files from [Scopus](https://www.scopus.com), [Web of Science](https://clarivate.com/webofsciencegroup/solutions/web-of-science), [PubMed](https://www.ncbi.nlm.nih.gov/pubmed), [PubMed Central](https://www.ncbi.nlm.nih.gov/pmc) or [Dimensions](https://app.dimensions.ai). Is mandatory that there be at least 2 different files from 2 different databases.
+This script eliminates the duplicated records from formatted .xlsx files from [Scopus](https://www.scopus.com), [Web of Science](https://clarivate.com/webofsciencegroup/solutions/web-of-science), [PubMed](https://www.ncbi.nlm.nih.gov/pubmed), [PubMed Central](https://www.ncbi.nlm.nih.gov/pmc), [Dimensions](https://app.dimensions.ai), Cochrane, Embase, IEEE, BVS, CAB, SciELO, or Google Scholar exported from [Publish or Perish](https://harzing.com/resources/publish-or-perish). Is mandatory that there be at least 2 different files from 2 different databases.
 
 ## Table of content
 
@@ -60,22 +60,24 @@ You can [download](https://github.com/glenjasper/remove-duplicates/archive/maste
 
 ## How To Use
 
-```sh  
-  usage: remove_duplicates.py [-h] -f FILES [-o OUTPUT] [--version]
+```sh
+$ python3 remove_duplicates.py --help
+usage: remove_duplicates.py [-h] -f FILES [-o OUTPUT] [--version]
 
-  This script eliminates the duplicated records from formatted .xlsx files from
-  Scopus, Web of Science, PubMed, PubMed Central or Dimensions. Is mandatory
-  that there be at least 2 different files from 2 different databases.
+This script eliminates the duplicated records from formatted .xlsx files from Scopus,
+Web of Science, PubMed, PubMed Central, Dimensions, Cochrane, Embase, IEEE, BVS, CAB,
+or Google Scholar (Publish or Perish). Is mandatory that there be at least 2 different
+files from 2 different databases.
 
-  optional arguments:
-    -h, --help            show this help message and exit
-    -f FILES, --files FILES
-                          .xlsx files separated by comma
-    -o OUTPUT, --output OUTPUT
-                          Output folder
-    --version             show program's version number and exit
+optional arguments:
+  -h, --help            show this help message and exit
+  -f FILES, --files FILES
+                        .xlsx files separated by comma
+  -o OUTPUT, --output OUTPUT
+                        Output folder
+  --version             show program's version number and exit
 
-  Thank you!
+Thank you!
 ```
 
 ## Author
