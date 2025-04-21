@@ -64,10 +64,11 @@ You can [download](https://github.com/glenjasper/remove-duplicates/archive/maste
 $ python3 remove_duplicates.py --help
 usage: remove_duplicates.py [-h] -f FILES [-o OUTPUT] [--version]
 
-This script eliminates the duplicated records from formatted .xlsx files from Scopus,
-Web of Science, PubMed, PubMed Central, Dimensions, Cochrane, Embase, IEEE, BVS, CAB,
-or Google Scholar (Publish or Perish). Is mandatory that there be at least 2 different
-files from 2 different databases.
+This script eliminates the duplicated records from formatted .xlsx files from
+Scopus, Web of Science, PubMed, PubMed Central, Dimensions, Cochrane, Embase,
+ScienceDirect, IEEE, BVS, CAB, SciELO, or Google Scholar (Publish or Perish).
+Is mandatory that there be at least 2 different files from 2 different
+databases.
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -85,7 +86,7 @@ Thank you!
 * [Glen Jasper](https://github.com/glenjasper)
 
 ## Organization
-* [Molecular and Computational Biology of Fungi Laboratory](https://sites.icb.ufmg.br/lbmcf/index.html) (LBMCF, ICB - **UFMG**, Belo Horizonte, Brazil).
+* [Molecular and Computational Biology of Fungi Laboratory](https://e3sys.com.br/grupo) (LBMCF, ICB - **UFMG**, Belo Horizonte, Brazil).
 
 ## License
 
