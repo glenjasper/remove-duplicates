@@ -135,7 +135,7 @@ class RemoveDuplicate:
         self.NAME_XLS_FILE_SCIELO = 'input_scielo.xlsx'
 
         # Output
-        self.XLS_FILE_OUTPUT = 'summary_magic_table.xlsx'
+        self.XLS_FILE_OUTPUT = 'summary_screened.xlsx'
         self.XLS_SHEET_UNIQUE = 'Unique'
         self.XLS_SHEET_WITHOUT_DOI = 'Without DOI'
         self.XLS_SHEET_DUPLICATES = 'Duplicates'
