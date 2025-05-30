@@ -2,7 +2,7 @@ MIT License
 
 Copyright (c) 2020 Glen Jasper
 Author: https://github.com/glenjasper
-Project: https://github.com/glenjasper/format-input
+Project: https://github.com/glenjasper/remove-duplicates
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -15,7 +15,7 @@ The above copyright notice, this permission notice, and the following attributio
 shall be included in all copies or substantial portions of the Software:
 
 "This software is developed by Glen Jasper (https://github.com/glenjasper),
-originally available at https://github.com/glenjasper/format-input"
+originally available at https://github.com/glenjasper/remove-duplicates"
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
