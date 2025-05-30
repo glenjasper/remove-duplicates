@@ -15,7 +15,7 @@ This script eliminates the duplicated records from formatted .xlsx files from [S
 - [Author](#author)
 - [Organization](#organization)
 - [License](#license)
-- [Acknowledgments](#acknowledgments)
+- [Required Attribution](#required-attribution)
 
 ## Pre-requisites
 
@@ -92,8 +92,12 @@ Thank you!
 
 This project is licensed under the MIT License - see the [LICENSE](./LICENSE) file for details.
 
-## Mandatory Attribution
+## Required Attribution
 
-**Any use, distribution, or modification of this software must include the following attribution:**
+**Any use, distribution, or modification of this software must include one of the following attributions:**
 
 > This software was developed by Glen Jasper (https://github.com/glenjasper), originally available at https://github.com/glenjasper/remove-duplicates
+
+**or** (example citation):
+
+> Jasper G. (2024). *format_input.py* script. Available at: https://github.com/glenjasper/remove-duplicates (Accessed 21 July 2024)
