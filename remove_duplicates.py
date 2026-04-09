@@ -884,10 +884,15 @@ def main():
 
         # Create summary file
         orr.save_xls(collect_unique, collect_without_doi, collect_duplicates)
+        n_unique = len(collect_unique)
+        n_duplicates = len(collect_duplicates)
+        n_without = len(collect_without_doi)
+        n_total = n_unique + n_duplicates + n_without
         orr.show_print("Output file: %s" % orr.XLS_FILE_OUTPUT, [orr.LOG_FILE], font = orr.GREEN)
-        orr.show_print("  Unique documents: %s" % len(collect_unique), [orr.LOG_FILE])
-        orr.show_print("  Duplicate documents: %s" % len(collect_duplicates), [orr.LOG_FILE])
-        orr.show_print("  Documents without DOI: %s" % len(collect_without_doi), [orr.LOG_FILE])
+        orr.show_print("  Unique documents: %s" % n_unique, [orr.LOG_FILE])
+        orr.show_print("  Duplicate documents: %s" % n_duplicates, [orr.LOG_FILE])
+        orr.show_print("  Documents without DOI: %s" % n_without, [orr.LOG_FILE])
+        orr.show_print("  [Total: %s]" % n_total, [orr.LOG_FILE])
 
         orr.show_print("", [orr.LOG_FILE])
         orr.show_print(orr.finish_time(start, "Elapsed time"), [orr.LOG_FILE])
